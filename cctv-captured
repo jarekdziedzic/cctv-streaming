@@ -1,0 +1,25 @@
+#!/bin/bash -eu
+
+trap "kill 0" EXIT
+
+SCRIPTS_DIR=$(dirname $(readlink -f $0))
+source "$SCRIPTS_DIR/cctv-streaming-helpers.sh"
+
+cd ${MEDIA_DIR}
+
+function log-vid()
+{
+    systemd-cat -t cctv-captured-vid
+}
+
+function log-img()
+{
+    systemd-cat -t cctv-captured-img
+}
+
+save-stream-to-mp4-files.sh 2>&1 | log-vid &
+sudo save-stream-to-jpegs-color-corrected-hwh264dec.sh 2>&1 | log-img &
+while true; do ~/code/cctv-streaming/rename-images.sh 2>&1 | log-img; sudo chown jarek:cctv 20* 20*/*; sleep 1; done &
+while true; do ~/code/cctv-streaming/rename-videos.sh 2>&1 | log-vid; sleep 10; done &
+
+wait -n $(jobs -p) 
