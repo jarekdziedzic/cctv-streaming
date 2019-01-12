@@ -12,3 +12,6 @@ video api from intel: vaapi. This was tested on i5 4250U, and on this platform i
 successully decodes h264.
 
 There are many rough edges in these scripts. Use at your own peril.
+
+To start, ensure you have gstreamer and plugins installed, edit the paths in cctv-streaming-helpers.sh 
+and run cctv-captured
